@@ -50,7 +50,17 @@ class Minmi
   def get_transcripts url
     @agent.get(url).at('body').text
   end
-  
+
+  def process_link link
+    #get transcripts
+    #create data structure
+    #save in mongo
+  end
+
+  def process_day
+    get_links
+    @links.each{ |link| process_link link }
+  end
   
 end
 
