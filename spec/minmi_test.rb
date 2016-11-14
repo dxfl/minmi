@@ -1,15 +1,36 @@
 
 require_relative '../lib/minmi'
 
-m = Minmi.new(Date.new(2016,11,05))
-puts "actual day is: #{m.day} so the url is #{m.main_url}"
-m.get_links
+options = {
+  :init_day => Date.new(2016,11,11),
+  :database => 'minmi',
+  :collection => 'test',
+  :last_day => Date.new(2016,11,01),
+  :num_threads => 20 # best number hand testing, try with benchmark
+}
 
-#change day
-m.prev_day
-puts "actual day is: #{m.day} so the url is #{m.main_url}"
+m = Minmi.new(options)
 
-#show links references
-puts "links references:"
-m.get_links
-m.links.each{ |l| puts l.href }
+#actual day test
+#puts "actual day is: #{m.day} so the url is #{m.main_url}"
+#m.get_links
+
+#change day test
+#m.prev_day
+#puts "actual day is: #{m.day} so the url is #{m.main_url}"
+
+# links queue test
+puts ">>> links queue test:"
+m.populate_queue
+links = m.test_queue
+puts "queue size: #{links.size}"
+10.times do
+  link = links.pop
+  puts "> day: #{link.day}, link: #{link.url}, title:"
+  puts link.title
+end
+
+# process_queue test
+puts ">>> process_queue test"
+m.init
+
