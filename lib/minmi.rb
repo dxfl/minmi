@@ -5,6 +5,9 @@ require_relative 'mongo_interface'
 require 'thread'
 require 'logger'
 
+LOG = Logger.new($stderr)
+LOG.level = Logger.const_get(ENV.fetch("LOG_LEVEL", "INFO"))
+
 class Minmi
 
   attr_reader :day, :links
