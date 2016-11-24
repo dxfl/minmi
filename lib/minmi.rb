@@ -81,8 +81,15 @@ class Minmi
     @mongo = MongoInterface.new(@db_name, @collection_name)
   end
 
+  def clean_text text
+    text.gsub(/\t+/, "")
+      .gsub(/ +/, " ")[/.*(?<=var CNN)/m]
+      .gsub(/var CNN/, "")
+      .gsub(/\n+/, "\n")
+  end
+  
   def get_transcripts url
-    with_error_handling{ @agent.get(url).at('body').text }
+    with_error_handling{ clean_text(@agent.get(url).at('body').text) }
   end
 
   def with_error_handling
