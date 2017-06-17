@@ -14,6 +14,7 @@ class Minmi
   
   def initialize options
     @day = options[:init_day]
+    @output = options[:output]
     @db_name = options[:database]
     @collection_name = options[:collection]
     @last_day = options[:last_day]
@@ -78,9 +79,30 @@ class Minmi
   end
 
   def connect_mongo
-    @mongo = MongoInterface.new(@db_name, @collection_name)
+    @output_connected = MongoInterface.new(@db_name, @collection_name)
   end
 
+  def connect_txt
+    @output_connected = Txt.new
+  end
+
+  def connect_json
+    @output_connected = Json.new
+  end
+
+  def connect_output
+    case @output
+    when 'txt'
+      connect_txt
+    when 'json'
+      connect_json
+    when 'mongo'
+      connect_mongo
+    else
+      raise ArgumentError, "not a valid output, choose 'txt', 'json' or 'mongo'"
+    end
+  end
+  
   def clean_text text
     text.gsub(/\t+/, "")
       .gsub(/ +/, " ")[/.*(?<=var CNN)/m]
@@ -106,7 +128,7 @@ class Minmi
              title: link.title,
              text: text
            }
-    with_error_handling{ @mongo.save([post]) }
+    with_error_handling{ @output_connected.save([post]) }
   end
 
   # TODO: change to queue & threads
@@ -123,7 +145,7 @@ class Minmi
   end
 
   def init
-    connect_mongo
+    connect_output
     populate_queue
     process_queue
   end
