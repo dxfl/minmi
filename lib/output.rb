@@ -7,12 +7,11 @@ module Output
   
   class Txt
 
-    def initialize post
-      @post = post
+    def initialize
       @file = load_file
     end
 
-    def article
+    def article post
       post[:text]
     end
     
@@ -24,8 +23,8 @@ module Output
       "cnn_#{Date.today.strftime("%Y%m%d")}"
     end
 
-    def save_file
-      @file.write(article)
+    def save post
+      @file.write(article(post))
     end
 
     def close_file
@@ -36,14 +35,22 @@ module Output
 
   class Json << Txt
 
-    def article
+    def article post
       post
     end
 
-    def save_file
-      @file.write(post.to_json)
+    def save post
+      @file.write(article(post).to_json)
     end
     
+  end
+
+  class Mongo << Json
+    # to do
+
+    def save_file
+      @file
+
   end
   
 end
